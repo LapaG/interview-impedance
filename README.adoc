@@ -4,7 +4,7 @@ Simple implentation of impedance cardiography signal analysis.
 
 == Input data
 
-Program expects `csv` filename with header at line 5, which contains columns with data as described below. 
+Program expects `csv` filename with header at line `5`, which contains columns with data as described below. 
 The rest of columns is ignored.
 
 [options=header]
@@ -30,6 +30,15 @@ The rest of columns is ignored.
 
 == Basic usage
 
-In order to run the program supply the filename parameter.
+In order to run the program supply the filename parameter, as follows:
+
+[source,shell]
+-----
+$ ./impedance_plot.py input.csv
+-----
+
 To show commandline help use `--help`.
 
+== Dependencies
+
+Dependencies are listed in `requirements.txt`
