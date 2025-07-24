@@ -119,18 +119,18 @@ def peak_detection(data, c_peaks, denoised):
     """
     peaks, _ = signal.find_peaks(data, height=0, distance=round(1))
     peaks_list = np.ndarray.tolist(peaks)
-    #plt.plot(data)
-    #plt.plot(peaks, data[peaks], "x")
-    #plt.show()
+    # plt.plot(data)
+    # plt.plot(peaks, data[peaks], "x")
+    # plt.show()
+    c_peaks = c_peaks_all[1:-1]
     b_peaks = []
     x_peaks = []
     #iterating through lists and comparing the values
     for c_peak in c_peaks:
-        for i, peak in enumerate(peaks_list):
-            #exception for value 40 (first value on the lists)
-            if c_peak == peak and c_peak != 40:
-                b_peaks.append(peaks_list[i-1])
-                x_peaks.append(peaks_list[i+2])
+         for i, peak in enumerate(peaks_list):
+             if c_peak == peak:
+                 b_peaks.append(peaks_list[i - 1])
+                 x_peaks.append(peaks_list[i + 2])
     b = np.array(b_peaks)
     x = np.array(x_peaks)
     plt.plot(denoised)
@@ -191,7 +191,7 @@ def statistical_analysis(denoised, *, c_peaks, b_peaks, x_peaks):
     :return: 0
     Saves file "results.csv".
     """
-    c_peaks = np.delete(c_peaks, 0, 0)
+    #c_peaks = np.delete(c_peaks, 0, 0)
     c_peaks_values = denoised[c_peaks]
     b_peaks_values = denoised[b_peaks]
     x_peaks_values = denoised[x_peaks]
