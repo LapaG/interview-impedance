@@ -1,0 +1,35 @@
+= Interview task: impedance signal analysis
+
+Simple implentation of impedance cardiography signal analysis.
+
+== Input data
+
+Program expects `csv` filename with header at line 5, which contains columns with data as described below. 
+The rest of columns is ignored.
+
+[options=header]
+|====
+| Column | Meaning | Notes
+// ----------------
+| `timestamp`
+| Data unix timestamp in milleseconds.
+| Current implementation uses start time of `1749475908106` to show plot.
+// ----------------
+| (any)
+| Unused column
+| 
+// ----------------
+| `BIOZI`
+|  Real part of impedance data
+| 
+// ----------------
+| `BIOZQ`
+| Imaginary part of impedance data
+|
+|====
+
+== Basic usage
+
+In order to run the program supply the filename parameter.
+To show commandline help use `--help`.
+
