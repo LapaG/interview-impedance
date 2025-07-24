@@ -12,9 +12,10 @@ def parse_args():
 
 
 def reading(filename):
-    df = pd.read_csv(filename, header= 5, usecols=[0, 2, 3])
-    data = df.iloc[30:-4] #Input filter
+    df = pd.read_csv(filename, header=5, usecols=[0, 2, 3])
+    data = df.iloc[30:-4]  # Input filter
     return data
+
 
 def dz_dt(df):
     """
@@ -31,6 +32,7 @@ def dz_dt(df):
 
     return df['dZ_dt']
 
+
 def plotting(y_column, df):
     """
     Show the plot.
@@ -41,6 +43,7 @@ def plotting(y_column, df):
     ax.set(xlabel='time', ylabel='-dZ/dt')
     plt.show()
 
+
 def denoising(data):
     """
     Denoising of the signal.
@@ -50,16 +53,16 @@ def denoising(data):
     :return: DataFrame
     Denoised signal.
     """
-    #Filter demands no NaNs in the dataframe.
+    # Filter demands no NaNs in the dataframe.
     data = np.nan_to_num(data)
-    #Visual comparison of signal denoising on 10 levels of polynomial.
+    # Visual comparison of signal denoising on 10 levels of polynomial.
     fig, ax = plt.subplots(10)
-    for poly in range(0,10):
+    for poly in range(0, 10):
         sig_denoised = signal.savgol_filter(data, 10, poly)
         ax[poly].plot(sig_denoised)
         ax[poly].set_title(poly)
     plt.show()
-    #Actual filtering on 2nd degree polynomial.
+    # Actual filtering on 2nd degree polynomial.
     chosen_signal = signal.savgol_filter(data, 10, 2)
     return chosen_signal
 
@@ -72,7 +75,7 @@ def squaring(data):
     :return: DataFrame
     Squared data.
     """
-    sq_data = np.power(data,2)
+    sq_data = np.power(data, 2)
     fig, ax = plt.subplots(1)
     ax.plot(sq_data)
     plt.title('Squared amplitude')
@@ -80,7 +83,7 @@ def squaring(data):
     return sq_data
 
 
-#def moving_average(data, n = 30):
+# def moving_average(data, n = 30):
 #    window = np.ones((1,n))/n
 #    averaging = np. convolve(np.squeeze(data), np.squeeze(window))
 #    return averaging
@@ -96,18 +99,18 @@ def c_peak_detection(data):
     # Detects only C-peaks thanks to signal height threshold.
     peaks, peak_properties = signal.find_peaks(
         data,
-        height = np.mean(data)+10,
-        distance = round(1),
+        height=np.mean(data) + 10,
+        distance=round(1),
     )
-    #Visualisation of C-peak locations on squared data.
+    # Visualisation of C-peak locations on squared data.
     plt.plot(data)
-    plt.plot(peaks,data[peaks],"x")
+    plt.plot(peaks, data[peaks], "x")
     plt.title('C peaks')
     plt.show()
     return np.ndarray.tolist(peaks)
 
 
-def peak_detection(data, c_peaks, denoised):
+def peak_detection(data, c_peaks_all, denoised):
     """
     Find all peaks on squared data, show plot, for each peak C, peaks B and X are found
     as the second next and previous peak. Visualize peak location on unsquared data.
@@ -136,7 +139,7 @@ def peak_detection(data, c_peaks, denoised):
     plt.plot(denoised)
     plt.plot(c_peaks, denoised[c_peaks], "x")
     plt.plot(b, denoised[b], "o")
-    plt.plot(x,denoised[x], "+")
+    plt.plot(x, denoised[x], "+")
     plt.title('Peaks')
     plt.show()
     return {
@@ -144,6 +147,7 @@ def peak_detection(data, c_peaks, denoised):
         "b_peaks": b,
         "x_peaks": x
     }
+
 
 def o_peak_detection(data, denoised, *, c_peaks, b_peaks, x_peaks):
     # TODO: optimize
@@ -153,9 +157,9 @@ def o_peak_detection(data, denoised, *, c_peaks, b_peaks, x_peaks):
     plt.plot(peaks, data[peaks], "x")
     plt.plot(denoised)
     plt.show()
-    #print(c_peaks)
+    # print(c_peaks)
     o_peaks = []
-    #iterating through lists and comparing the values
+    # iterating through lists and comparing the values
     for c_peak in c_peaks:
         for i, peak in enumerate(peaks_list):
             #exception for value 40 (first value on the lists)
@@ -165,7 +169,7 @@ def o_peak_detection(data, denoised, *, c_peaks, b_peaks, x_peaks):
     plt.plot(denoised)
     plt.plot(c_peaks, denoised[c_peaks], "x")
     plt.plot(b_peaks, denoised[b_peaks], "o")
-    plt.plot(x_peaks,denoised[x_peaks], "+")
+    plt.plot(x_peaks, denoised[x_peaks], "+")
     plt.plot(o, denoised[o], "o", color='orange')
     plt.show()
     return {
@@ -174,6 +178,7 @@ def o_peak_detection(data, denoised, *, c_peaks, b_peaks, x_peaks):
         "x_peaks": x_peaks,
         "o_peaks": o
     }
+
 
 def statistical_analysis(denoised, *, c_peaks, b_peaks, x_peaks):
     """
@@ -197,12 +202,16 @@ def statistical_analysis(denoised, *, c_peaks, b_peaks, x_peaks):
     x_peaks_values = denoised[x_peaks]
     b_c = np.abs(np.subtract(b_peaks, c_peaks))
     b_x = np.abs(np.subtract(b_peaks, x_peaks))
-    #add other statistics and make a table, save to file
+    # add other statistics and make a table, save to file
     df = pd.DataFrame({
-        'Parameter': ['systolic_peak','b_peaks', 'dicrotic_notch', 'b_c_interval', 'systolic_ejection_time'],
-        'Mean': [np.mean(c_peaks_values), np.mean(b_peaks_values), np.mean(x_peaks_values),  np.mean(b_c), np.mean(b_x)],
-        'Std dev': [np.std(c_peaks_values), np.std(b_peaks_values), np.std(x_peaks_values), np.std(b_c), np.std(b_x)],
-        'Variance': [np.var(c_peaks_values), np.var(b_peaks_values), np.var(x_peaks_values), np.var(b_c), np.var(b_x)]})
+        'Parameter': ['systolic_peak', 'b_peaks', 'dicrotic_notch', 'b_c_interval',
+                      'systolic_ejection_time'],
+        'Mean': [np.mean(c_peaks_values), np.mean(b_peaks_values),
+                 np.mean(x_peaks_values), np.mean(b_c), np.mean(b_x)],
+        'Std dev': [np.std(c_peaks_values), np.std(b_peaks_values),
+                    np.std(x_peaks_values), np.std(b_c), np.std(b_x)],
+        'Variance': [np.var(c_peaks_values), np.var(b_peaks_values),
+                     np.var(x_peaks_values), np.var(b_c), np.var(b_x)]})
     df.to_csv('results.csv', index=False)
     return 0
 
@@ -216,8 +225,9 @@ def main():
     squared = squaring(denoised)
     c_peaks = c_peak_detection(squared)
     peaks_detected = peak_detection(squared, c_peaks, denoised)
-    #o_peak_detection(squared, denoised, **peaks_detected)
+    # o_peak_detection(squared, denoised, **peaks_detected)
     statistical_analysis(denoised, **peaks_detected)
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     main()
